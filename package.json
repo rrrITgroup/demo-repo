@@ -1,0 +1,31 @@
+{
+  "name": "ui5-demo",
+  "version": "0.0.1",
+  "devDependencies": {
+    "@sapui5/ts-types": "1.71.x",
+    "@ui5/cli": "2.2.6",
+    "@sap/ui5-builder-webide-extension": "1.0.x",
+    "bestzip": "2.1.4",
+    "rimraf": "3.0.2",
+    "karma": "^4.4.1",
+    "karma-chrome-launcher": "^3.1.0",
+    "karma-coverage": "^2.0.2",
+    "karma-ui5": "^2.2.0",
+    "eslint": "5.16.x",
+    "@sap/eslint-plugin-ui5-jsdocs": "2.0.x",
+    "@sap/approuter": "9.0.x",
+    "@sap/html5-repo-mock": "2.0.1"
+  },
+  "scripts": {
+    "build": "npm run clean && ui5 build --include-task=generateManifestBundle generateCachebusterInfo && npm run zip",
+    "start": "ui5 serve",
+    "zip": "cd dist && npx bestzip ../ui5-demo-content.zip *",
+    "clean": "npx rimraf ui5-demo-content.zip dist",
+    "test": "karma start"
+  },
+  "ui5": {
+    "dependencies": [
+      "@sap/ui5-builder-webide-extension"
+    ]
+  }
+}

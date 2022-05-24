@@ -1,0 +1,84 @@
+_schema-version: "3.2"
+ID: ui5-demo
+version: 0.0.1
+modules:
+- name: ui5-demo-destination-content
+  type: com.sap.application.content
+  requires:
+  - name: ui5-demo-destination-service
+    parameters:
+      content-target: true
+  - name: ui5-demo_html_repo_host
+    parameters:
+      service-key:
+        name: ui5-demo_html_repo_host-key
+  - name: uaa_ui5-demo
+    parameters:
+      service-key:
+        name: uaa_ui5-demo-key
+  parameters:
+    content:
+      instance:
+        destinations:
+        - Name: ui5_demo_ui5_demo_html_repo_host
+          ServiceInstanceName: ui5-demo-html5-app-host-service
+          ServiceKeyName: ui5-demo_html_repo_host-key
+          sap.cloud.service: ui5-demo
+        - Authentication: OAuth2UserTokenExchange
+          Name: ui5_demo_uaa_ui5_demo
+          ServiceInstanceName: ui5-demo-xsuaa-service
+          ServiceKeyName: uaa_ui5-demo-key
+          sap.cloud.service: ui5-demo
+        existing_destinations_policy: ignore
+  build-parameters:
+    no-source: true
+- name: ui5-demo_ui_deployer
+  type: com.sap.application.content
+  path: .
+  requires:
+  - name: ui5-demo_html_repo_host
+    parameters:
+      content-target: true
+  build-parameters:
+    build-result: resources
+    requires:
+    - artifacts:
+      - ui5-demo-content.zip
+      name: ui5-demo
+      target-path: resources/
+- name: ui5-demo
+  type: html5
+  path: .
+  build-parameters:
+    builder: custom
+    commands:
+    - npm run build
+    supported-platforms: []
+resources:
+- name: ui5-demo-destination-service
+  type: org.cloudfoundry.managed-service
+  parameters:
+    config:
+      HTML5Runtime_enabled: true
+      version: 1.0.0
+    service: destination
+    service-name: ui5-demo-destination-service
+    service-plan: lite
+- name: ui5-demo_html_repo_host
+  type: org.cloudfoundry.managed-service
+  parameters:
+    service: html5-apps-repo
+    service-name: ui5-demo-html5-app-host-service
+    service-plan: app-host
+- name: uaa_ui5-demo
+  type: org.cloudfoundry.managed-service
+  parameters:
+    path: ./xs-security.json
+    service: xsuaa
+    service-name: ui5-demo-xsuaa-service
+    service-plan: application
+build-parameters:
+  before-all:
+  - builder: custom
+    commands:
+    - npm install
